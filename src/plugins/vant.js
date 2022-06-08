@@ -1,7 +1,11 @@
 import Vue from 'vue';
-import { Button } from 'vant';
 import { Toast } from 'vant';
 
-Vue.use( Button );
+import { Lazyload } from 'vant';
+import { Divider } from 'vant';
+
 // 全局方法挂载
 Vue.prototype.vantToast = Toast
+
+Vue.use(Lazyload)
+Vue.use(Divider)

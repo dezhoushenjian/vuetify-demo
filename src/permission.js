@@ -7,11 +7,16 @@ const whiteList = ['/login', '/auth-redirect', '/bind', '/register','/qrCode']
 router.beforeEach((to, from, next) => {
 
   if (getToken()) {
+    // 设置底部导航栏坐标
+    if(to.path.includes('index')){localStorage.setItem('bNavValue','0')}
+    if(to.path.includes('report')){localStorage.setItem('bNavValue','1')}
+    if(to.path.includes('message')){localStorage.setItem('bNavValue','2')}
+    if(to.path.includes('about')){localStorage.setItem('bNavValue','3')}
+    // 设置页头标题栏标题
     to.meta.title && store.dispatch('settings/setTitle', to.meta.title)
     /* has token*/
     if (to.path === '/login') {
       next({ path: '/' })
-
     } else {
       if (store.getters.roles.length === 0) {
         // 判断当前用户是否已拉取完user_info信息

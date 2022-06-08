@@ -35,30 +35,53 @@ export const constantRoutes = [
   {
     path: '',
     component: Layout,
-    redirect: 'index',
+    redirect: '/index',
     children: [
       {
-        path: 'index',
+        path: '/index',
         component: () => import('../views/HomeView'),
         name: 'home',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
+        meta: { title: '合兴巡检', icon: 'dashboard', affix: true }
       }
     ]
   },
-  // {
-  //   path: '/',
-  //   name: 'home',
-  //
-  //   component: () => import('../views/HomeView'),
-  // },
-  // {
-  //   path: '/about',
-  //   name: 'about',
-  //   // route level code-splitting
-  //   // this generates a separate chunk (about.[hash].js) for this route
-  //   // which is lazy-loaded when the route is visited.
-  //   component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  // }
+  {
+    path: '/report',
+    component: Layout,
+    children: [
+      {
+        path: 'chart',
+        component: () => import('../views/report/chart'),
+        name: 'chart',
+        meta: { title: '报表', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/news',
+    component: Layout,
+    children: [
+      {
+        path: 'message',
+        component: () => import('../views/news/message'),
+        name: 'message',
+        meta: { title: '消息', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
+  {
+    path: '/about',
+    component: Layout,
+    children: [
+      {
+        path: 'info',
+        component: () => import('../views/about/info'),
+        name: 'info',
+        meta: { title: '我的信息', icon: 'dashboard', affix: true }
+      }
+    ]
+  },
+
 ]
 
 const router = new Router({

@@ -22,12 +22,13 @@ module.exports = defineConfig({
   ],
   // webpack-dev-server 相关配置
   devServer: {
-    host: '127.0.0.1',
+    host: '0.0.0.0',
     port: port,
     open: true,
     proxy: {
       [process.env.VUE_APP_BASE_API]: {
-        target: 'http://192.168.214.237:50/prod-api/',
+        // target: 'http://192.168.214.237:50/prod-api/',
+        target: 'http://192.168.214.237/pis-api/v1/',
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''

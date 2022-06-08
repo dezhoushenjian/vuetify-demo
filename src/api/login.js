@@ -48,7 +48,7 @@ export function getInfo() {
 // 退出方法
 export function logout() {
   return request({
-    url: 'prod-api/auth/logout',
+    url: '/auth/logout',
     method: 'delete'
   })
 }
@@ -56,7 +56,7 @@ export function logout() {
 // 获取验证码
 export function getCodeImg() {
   return request({
-    url: 'prod-api/code',
+    url: '/code',
     method: 'get',
     timeout: 20000
   })

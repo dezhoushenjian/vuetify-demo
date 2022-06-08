@@ -1,5 +1,4 @@
 import axios from 'axios'
-import { MessageBox} from 'element-ui'
 import store from '../store/index'
 import { getToken } from "@/utils/auth"
 import errorCode from '@/utils/errorCode'
@@ -17,6 +16,7 @@ const service = axios.create({
 
 // request拦截器
 service.interceptors.request.use(config => {
+  store.state.messageText.loading = true
   // 是否需要设置 token
   const isToken = (config.headers || {}).isToken === false
   if (getToken() && !isToken) {
@@ -40,21 +40,14 @@ service.interceptors.request.use(config => {
 
 // 响应拦截器
 service.interceptors.response.use(res => {
+      store.state.messageText.loading = false
     // 未设置状态码则默认成功状态
     const code = res.data.code || 200;
     // 获取错误信息
     const msg = errorCode[code] || res.data.msg || errorCode['default']
     if (code === 401) {
-      MessageBox.confirm('登录状态已过期，您可以继续留在该页面，或者重新登录', '系统提示', {
-          confirmButtonText: '重新登录',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }
-      ).then(() => {
-        store.dispatch('LogOut').then(() => {
-          location.href = '/index';
-        })
-      }).catch(() => {});
+      store.state.messageText.messageText = '登录已过期，是否重新登录'
+      store.state.messageText.snackbar = true
       return Promise.reject('无效的会话，或者会话已过期，请重新登录。')
     } else if (code === 500) {
       Toast({message: msg, forbidClick: true})
@@ -74,6 +67,7 @@ service.interceptors.response.use(res => {
   },
   error => {
     console.log('err' + error)
+    store.state.messageText.loading = false
     let { message } = error;
     if (message === "Network Error") {
       message = "后端接口连接异常";
