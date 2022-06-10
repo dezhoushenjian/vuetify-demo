@@ -46,8 +46,8 @@ service.interceptors.response.use(res => {
     // 获取错误信息
     const msg = errorCode[code] || res.data.msg || errorCode['default']
     if (code === 401) {
-      store.state.messageText.messageText = '登录已过期，是否重新登录'
-      store.state.messageText.snackbar = true
+      // store.state.messageText.messageText = '登录已过期，是否重新登录'
+      // store.state.messageText.snackbar = true
       return Promise.reject('无效的会话，或者会话已过期，请重新登录。')
     } else if (code === 500) {
       Toast({message: msg, forbidClick: true})

@@ -2,7 +2,7 @@
   <v-app id="app">
     <v-form class="pa-6" ref="form" v-model="valid" lazy-validation app>
       <v-text-field v-model="loginForm.username" :rules="usernameRules" label="账号" required></v-text-field>
-      <v-text-field v-model="loginForm.password" :rules="passwordRules" label="密码" required></v-text-field>
+      <v-text-field v-model="loginForm.password" :rules="passwordRules" label="密码" required :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'" :type="show2 ? 'text' : 'password'"  @click:append="show2 = !show2"></v-text-field>
       <v-checkbox v-model="loginForm.rememberMe"  label="记住密码" ></v-checkbox>
       <v-btn block  :disabled="!valid"  color="success"  @click="handleLogin">登录</v-btn>
       <div style="display: flex;justify-content: center;">
@@ -25,6 +25,7 @@ export default {
   name: "Login",
   data() {
     return {
+      show2:false,
       valid:true,
       loginForm: {
         username: "",

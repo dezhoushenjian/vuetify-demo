@@ -6,27 +6,26 @@
     </v-carousel>
     <van-divider>运营管理</van-divider>
 <!--    金刚区域-->
-    <v-row  class="text-center" >
-      <v-col :cols="3" class="pa-2" v-for="(item,index) in menuData" :key="index">
-        <v-btn small >
-          <v-icon :color="item.iconColor">mdi-{{item.icon}}</v-icon>
+    <v-row  class="text-center"  >
+      <v-col :cols="3" class="pa-2" v-for="(item,index) in menuData" :key="index" >
+        <v-btn small>
+            <v-icon :color="item.iconColor">mdi-{{item.icon}}</v-icon>
         </v-btn>
         <div style="color: #666; font-size: 0.5rem;margin-top: 0.5rem">{{item.name}} </div>
       </v-col>
-
     </v-row>
-    <v-row class="text-center">
-      <v-col class="mb-5" cols="12">
-        <h2 class="headline font-weight-bold mb-3">Token</h2>
 
-        <v-row justify="center" class="pa-5">
-          <div style="white-space:normal;word-break:break-all;	word-wrap:break-word; ">
-            {{this.$store.state.user.token}}
-          </div>
-        </v-row>
-      </v-col>
+<!--    <v-row class="text-center">-->
+<!--      <v-col class="mb-5" cols="12">-->
+<!--        <h2 class="headline font-weight-bold mb-3">Token</h2>-->
 
-    </v-row>
+<!--        <v-row justify="center" class="pa-5">-->
+<!--          <div style="white-space:normal;word-break:break-all;	word-wrap:break-word; ">-->
+<!--            {{this.$store.state.user.token}}-->
+<!--          </div>-->
+<!--        </v-row>-->
+<!--      </v-col>-->
+<!--    </v-row>-->
     <v-btn color="error" @click="toast">接口异常</v-btn>
     <v-btn  color="primary" elevation="2" class="ma-3" @click="showMessage">消息通知</v-btn>
   </v-container>
@@ -152,4 +151,5 @@ import request from '@/utils/request'
       font-size:10px !important;
     }
  }
+
 </style>
