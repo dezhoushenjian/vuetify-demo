@@ -1,70 +1,42 @@
 <template>
   <v-app id="inspire">
-    <v-app-bar height="40" app>
-<!--  应用栏按钮-->
-<!--      <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>-->
-
-      <v-toolbar-title  class="ma-auto" style="font-size: 1rem">{{title}}</v-toolbar-title>
+    <v-app-bar :height="appBarHeight" app>
+      <v-toolbar-title   class="ma-auto" :style="{'font-size':titleFontsize}">{{title}}</v-toolbar-title>
     </v-app-bar>
 
     <v-main class="pb-10">
       <router-view></router-view>
 <!--      消息通知弹出框-->
-      <v-snackbar
-          class="mb-10"
-          v-model="this.$store.state.messageText.snackbar"
-          :multi-line="multiLine"
-          :timeout = 'timeout'
-
-      >
+      <v-snackbar class="mb-10" v-model="this.$store.state.messageText.snackbar" :multi-line="multiLine" :timeout = 'timeout'>
           {{ this.$store.state.messageText.messageText }}
         <template v-slot:action="{ attrs }">
-            <v-btn
-                color="green"
-                text
-                v-bind="attrs"
-                @click="goToLogin"
-            >
-              登录
-            </v-btn>
-            <v-btn
-                color="red"
-                text
-                v-bind="attrs"
-                @click="closMessageText"
-            >
-              关闭
-            </v-btn>
+            <v-btn color="green" text v-bind="attrs" @click="goToLogin">登录</v-btn>
+            <v-btn color="red" text v-bind="attrs" @click="closMessageText">关闭</v-btn>
         </template>
       </v-snackbar>
     </v-main>
 <!--    底部导航-->
-    <v-bottom-navigation
-        :value='value'
-        color="teal"
-        grow
-        class="pa-2"
-        style="position: fixed"
-    >
-
+    <v-bottom-navigation  :height="bNavHeight" :value='value' color="teal" grow class="pa-2" style="position: fixed">
         <v-btn  style="background: none" @click="goToBottomNavigation('home')" >
-          <span>首页</span>
-          <v-icon>mdi-home-circle-outline</v-icon>
+          <span :style="{'font-size':bNavText}">首页</span>
+          <v-icon :size="bNavIcon">mdi-home-circle-outline</v-icon>
         </v-btn>
 
         <v-btn style="background: none" @click="goToBottomNavigation('chart')">
-          <span>报表</span>
-          <v-icon>mdi-chart-bell-curve</v-icon>
+          <span :style="{'font-size':bNavText}">报表</span>
+          <v-icon :size="bNavIcon">mdi-chart-bell-curve</v-icon>
         </v-btn>
 
       <v-btn style="background: none" @click="goToBottomNavigation('message')">
-        <span>消息</span>
-        <v-icon>mdi-message-badge-outline</v-icon>
+        <span :style="{'font-size':bNavText}">消息</span>
+        <v-badge color="red" content="6">
+          <v-icon :size="bNavIcon">mdi-message-badge-outline</v-icon>
+        </v-badge>
       </v-btn>
 
       <v-btn style="background: none" @click="goToBottomNavigation('info')">
-        <span>设置</span>
-        <v-icon>mdi-cellphone-cog</v-icon>
+        <span :style="{'font-size':bNavText}">设置</span>
+        <v-icon :size="bNavIcon">mdi-cellphone-cog</v-icon>
       </v-btn>
     </v-bottom-navigation>
   </v-app>
@@ -86,6 +58,14 @@ export default {
     multiLine: true,
     timeout: 1000*60*60*24,
   }),
+  computed: {
+    appBarHeight () {switch (this.$vuetify.breakpoint.name) {case 'xs': return 40;case 'sm': return 50}},
+    titleFontsize(){switch (this.$vuetify.breakpoint.name) {case 'xs': return '1rem';case 'sm': return '1.5rem'}},
+    bNavHeight () {switch (this.$vuetify.breakpoint.name) {case 'xs': return 50;case 'sm': return 60}},
+    bNavText () {switch (this.$vuetify.breakpoint.name) {case 'sm': return '16px'}},
+    bNavIcon () {switch (this.$vuetify.breakpoint.name) {case 'sm': return '28'}},
+
+  },
   mounted() {
     this.title = this.$store.state.settings.title
     this.value = parseInt(localStorage.getItem('bNavValue'))

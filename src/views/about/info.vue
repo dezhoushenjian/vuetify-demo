@@ -8,13 +8,13 @@
               <v-expansion-panel-header>
                 <v-row  align="center" class="spacer" no-gutters>
                   <v-col cols="4" sm="2" md="1">
-                    <v-avatar size="50px" rounded>
+                    <v-avatar :size="avatarSize" rounded>
                       <img v-if="message.avatar" alt="Avatar" src="https://avatars0.githubusercontent.com/u/9064066?v=4&s=460">
                       <v-icon v-else :color="message.color" v-text="message.icon"></v-icon>
                     </v-avatar>
                   </v-col>
 
-                  <v-col class="text-no-wrap" cols="5" sm="3">
+                  <v-col class="text-no-wrap" cols="5" sm="3" :style="{'font-size':textSize}">
                     <strong ><div>{{message.name}}</div></strong>
                     <div class="mt-2" style="color:#aaa">{{message.position}}</div>
                   </v-col>
@@ -25,27 +25,27 @@
                 <v-divider></v-divider>
                 <v-card-text class="pr-0 pt-0" >
                   <div  class="d-flex justify-center align-center mt-2" style="height: 40px" >
-                    <strong> <div style="font-size: 15px">姓名:</div></strong>
-                    <v-text-field autofocus class="ml-2" v-model="infoForm.name" :rules="nameRules" style="margin-top: 10px;font-size: 15px" required></v-text-field>
+                    <strong> <div :style="{'font-size':textSize}">姓名:</div></strong>
+                    <v-text-field autofocus class="ml-2" v-model="infoForm.name" :rules="nameRules" :style="{'font-size':textSize,'margin-top':'10px'}" required></v-text-field>
                   </div>
                   <div class="d-flex justify-center align-center mt-2"  style="height: 40px" >
-                    <strong> <div style="font-size: 15px">岗位:</div></strong>
-                    <v-text-field  class="ml-2" v-model="infoForm.position" :rules="positionRules" style="margin-top: 10px;font-size: 15px" required></v-text-field>
+                    <strong> <div :style="{'font-size':textSize}">岗位:</div></strong>
+                    <v-text-field  class="ml-2" v-model="infoForm.position" :rules="positionRules" :style="{'font-size':textSize,'margin-top':'10px'}" required></v-text-field>
                   </div>
                   <div class="d-flex justify-center align-center mt-2"  style="height: 40px" >
-                    <strong> <div style="font-size: 15px">邮箱:</div></strong>
-                    <v-text-field  class="ml-2" v-model="infoForm.email" :rules="emailRules" style="margin-top: 10px;font-size: 15px" required></v-text-field>
+                    <strong> <div :style="{'font-size':textSize}">邮箱:</div></strong>
+                    <v-text-field  class="ml-2" v-model="infoForm.email" :rules="emailRules" :style="{'font-size':textSize,'margin-top':'10px'}" required></v-text-field>
                   </div>
                   <div class="d-flex justify-center align-center mt-2"  style="height: 40px" >
-                    <strong> <div style="font-size: 15px">生日:</div></strong>
-                    <v-text-field  class="ml-2" v-model="infoForm.birthday" :rules="birthdayRules" style="margin-top: 10px;font-size: 15px" required></v-text-field>
+                    <strong> <div :style="{'font-size':textSize}">生日:</div></strong>
+                    <v-text-field  class="ml-2" v-model="infoForm.birthday" :rules="birthdayRules" :style="{'font-size':textSize,'margin-top':'10px'}" required></v-text-field>
                   </div>
                   <div class="d-flex justify-center align-center mt-2"  style="height: 40px" >
-                    <strong> <div style="font-size: 15px">电话:</div></strong>
-                    <v-text-field  class="ml-2" v-model="infoForm.phone" :rules="phoneRules" style="margin-top: 10px;font-size: 15px" required></v-text-field>
+                    <strong> <div :style="{'font-size':textSize}">电话:</div></strong>
+                    <v-text-field  class="ml-2" v-model="infoForm.phone" :rules="phoneRules" :style="{'font-size':textSize,'margin-top':'10px'}" required></v-text-field>
                   </div>
 
-                  <v-btn block  :disabled="!valid"  color="success" class="mt-6" @click="saveInfo">保存</v-btn>
+                  <v-btn block  :disabled="!valid" :style="{'font-size':textSize}"  color="success" class="mt-6" @click="saveInfo">保存</v-btn>
                 </v-card-text>
               </v-expansion-panel-content>
             </v-expansion-panel>
@@ -59,12 +59,12 @@
               <v-expansion-panel-header>
                 <v-row align="center" class="spacer" no-gutters>
                   <v-col cols="4" sm="2" md="1">
-                    <v-avatar size="50px" rounded>
-                      <v-icon color="red" size="30" v-text="'mdi-lock-outline'"></v-icon>
+                      <v-avatar :size="avatarSize" rounded>
+                      <v-icon color="red" :size="iconSize" v-text="'mdi-lock-outline'"></v-icon>
                     </v-avatar>
                   </v-col>
 
-                  <v-col class="text-no-wrap" cols="5" sm="3">
+                  <v-col class="text-no-wrap" cols="5" sm="3" :style="{'font-size':textSize}" >
                     <strong ><div>修改密码</div></strong>
                   </v-col>
 
@@ -74,16 +74,16 @@
                 <v-divider></v-divider>
                 <v-card-text class="pr-0 pt-0 password" >
                   <div  class="d-flex justify-center align-center mt-2" style="height: 40px" >
-                    <strong><div style="font-size: 15px">输入旧密码:</div></strong>
-                    <v-text-field  class="ml-2" autofocus autocomplete="off" v-model="passwordForm.password" :rules="passwordRules" style="margin-top: 10px;font-size: 15px;" required :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :type="show1 ? 'text' : 'password'"  @click:append="show1 = !show1"></v-text-field>
+                    <strong><div :style="{'font-size':textSize}">输入旧密码:</div></strong>
+                    <v-text-field  class="ml-2" autofocus autocomplete="off" v-model="passwordForm.password" :rules="passwordRules" :style="{'font-size':textSize,'margin-top':'10px'}" required :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" :type="show1 ? 'text' : 'password'"  @click:append="show1 = !show1"></v-text-field>
                   </div>
                   <div class="d-flex justify-center align-center mt-4" style="height: 40px" >
-                    <strong><div style="font-size: 15px">输入新密码:</div></strong>
-                    <v-text-field  class="ml-2" autocomplete="off" v-model="passwordForm.newPassword" :rules="passwordRules" style="margin-top: 10px;font-size: 15px;" required :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'" :type="show2 ? 'text' : 'password'"  @click:append="show2 = !show2"></v-text-field>
+                    <strong><div :style="{'font-size':textSize}">输入新密码:</div></strong>
+                    <v-text-field  class="ml-2" autocomplete="off" v-model="passwordForm.newPassword" :rules="passwordRules" :style="{'font-size':textSize,'margin-top':'10px'}" required :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'" :type="show2 ? 'text' : 'password'"  @click:append="show2 = !show2"></v-text-field>
                   </div>
                   <div class="d-flex justify-center align-center mt-4" style="height: 40px" >
-                    <strong><div style="font-size: 15px">确认新密码:</div></strong>
-                    <v-text-field  class="ml-2" autocomplete="off" v-model="passwordForm.confirmPassword" :rules="passwordRules" style="margin-top: 10px;font-size: 15px;" required :append-icon="show3 ? 'mdi-eye' : 'mdi-eye-off'" :type="show3 ? 'text' : 'password'"  @click:append="show3 = !show3"></v-text-field>
+                    <strong><div :style="{'font-size':textSize}">确认新密码:</div></strong>
+                    <v-text-field  class="ml-2" autocomplete="off" v-model="passwordForm.confirmPassword" :rules="passwordRules" :style="{'font-size':textSize,'margin-top':'10px'}" required :append-icon="show3 ? 'mdi-eye' : 'mdi-eye-off'" :type="show3 ? 'text' : 'password'"  @click:append="show3 = !show3"></v-text-field>
                   </div>
 
                   <v-btn block  :disabled="!valid2"  color="success" class="mt-6" @click="savePassword">保存</v-btn>
@@ -99,12 +99,12 @@
             <v-expansion-panel-header>
               <v-row align="center" class="spacer" no-gutters>
                 <v-col cols="4" sm="2" md="1">
-                  <v-avatar size="50px" rounded>
-                    <v-icon color="blue" size="30" v-text="'mdi-account-question-outline'"></v-icon>
+                  <v-avatar :size="avatarSize" rounded>
+                    <v-icon color="blue" :size="iconSize" v-text="'mdi-account-question-outline'"></v-icon>
                   </v-avatar>
                 </v-col>
 
-                <v-col class="text-no-wrap "  cols="5" sm="3">
+                <v-col class="text-no-wrap "  cols="5" sm="3" :style="{'font-size':textSize}">
                   <strong ><div id="help2" style="color: #212121; ">帮助文档</div></strong>
                 </v-col>
 
@@ -119,12 +119,12 @@
             <v-expansion-panel-header>
               <v-row align="center" class="spacer" no-gutters>
                 <v-col cols="4" sm="2" md="1">
-                  <v-avatar size="50px" rounded>
-                    <v-icon color="black" size="30" v-text="'mdi-card-outline'"></v-icon>
+                  <v-avatar :size="avatarSize" rounded>
+                    <v-icon color="black" :size="iconSize" v-text="'mdi-card-outline'"></v-icon>
                   </v-avatar>
                 </v-col>
 
-                <v-col class="text-no-wrap d-flex justify-space-between"  cols="5" sm="3">
+                <v-col class="text-no-wrap d-flex justify-space-between"  cols="5" sm="3" :style="{'font-size':textSize}">
                   <strong ><div style="color: #212121; ">版本信息</div></strong>
                   <div>1.0.0</div>
                 </v-col>
@@ -136,13 +136,10 @@
       </v-row>
       <v-row class="mt-6">
         <v-col>
-          <v-btn block color="error" class="" @click="logout">退出登录</v-btn>
+          <v-btn block color="error" :style="{'font-size':textSize}" @click="logout">退出登录</v-btn>
         </v-col>
       </v-row>
     </div>
-
-
-
 
   </v-container>
 
@@ -204,6 +201,11 @@ export default {
         v => (v && v.length === 11) || '手机号长度为11位',
       ],
     }
+  },
+  computed: {
+    avatarSize () {switch (this.$vuetify.breakpoint.name) {case 'xs': return '50px';case 'sm': return '100px'}},
+    iconSize () {switch (this.$vuetify.breakpoint.name) {case 'xs': return '30px';case 'sm': return '50px';case 'md': return '50px';case 'lg': return '50px'}},
+    textSize(){switch (this.$vuetify.breakpoint.name) {case 'xs': return '15px';case 'sm': return '20px';case 'md': return '20px';case 'lg': return '20px'}}
   },
   mounted() {
     this.infoForm = JSON.parse(JSON.stringify(this.messages[0]))

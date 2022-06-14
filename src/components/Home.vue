@@ -1,19 +1,24 @@
 <template>
   <v-container>
 <!--    轮播图区域-->
-    <v-carousel cycle interval="3000" class="rounded-lg" v-model="model" :show-arrows="false"  height="150"  >
+    <v-carousel cycle interval="3000" class="rounded-lg" v-model="model" :show-arrows="false"  :height="carouselHeight"  >
       <v-carousel-item v-for="(item,i) in images" :key="i" :src="item.src"></v-carousel-item>
     </v-carousel>
-    <van-divider>运营管理</van-divider>
+    <van-divider class="vDivider">运营管理</van-divider>
 <!--    金刚区域-->
     <v-row  class="text-center"  >
       <v-col :cols="3" class="pa-2" v-for="(item,index) in menuData" :key="index" >
-        <v-btn small>
-            <v-icon :color="item.iconColor">mdi-{{item.icon}}</v-icon>
+        <v-btn>
+            <v-icon :size="bNavIcon" :color="item.iconColor">mdi-{{item.icon}}</v-icon>
         </v-btn>
-        <div style="color: #666; font-size: 0.5rem;margin-top: 0.5rem">{{item.name}} </div>
+<!--        <div style="color: #666; :font-size='bNavText'  ;margin-top: 0.5rem">{{item.name}} </div>-->
+        <div :style="{color:'#666','font-size':bNavText,'margin-top':'0.5rem'}">{{item.name}} </div>
       </v-col>
     </v-row>
+    <van-divider class="vDivider">图表区域</van-divider>
+    <div class="mt-2 ">
+      <ve-liquidfill :height="liquidSize" :width="liquidSize" :data="liquidChartData" :settings="liquidChartSettings"></ve-liquidfill>
+    </div>
 
 <!--    <v-row class="text-center">-->
 <!--      <v-col class="mb-5" cols="12">-->
@@ -33,12 +38,17 @@
 
 <script>
 
+
 import request from '@/utils/request'
 
   export default {
     name: 'Home',
-    created() {
-
+    created() {},
+    computed: {
+      carouselHeight () {switch (this.$vuetify.breakpoint.name) {case 'xs': return 150;case 'sm': return 250;case 'md': return 250;case 'lg': return 250}},
+      bNavIcon () {switch (this.$vuetify.breakpoint.name) {case 'sm': return '30'}},
+      bNavText () {switch (this.$vuetify.breakpoint.name) {case 'xs': return '10px';case 'sm': return '16px'}},
+      liquidSize(){switch (this.$vuetify.breakpoint.name) {case 'xs': return '350px';case 'sm': return '660px';case 'md': return '660px';case 'lg': return '1000px'}}
     },
     data: () => ({
       model: 0,
@@ -102,7 +112,56 @@ import request from '@/utils/request'
           icon: 'noodles',
           iconColor: '#efacec'
         },
-      ]
+      ],
+      liquidChartSettings: {
+        wave: [[0.5, 0.3, 0.1], [0.3, 0.2], []],
+        seriesMap: [
+          {
+            color: ['red', 'green', 'yellow'],
+            label: {
+              formatter (options) {
+                const {seriesName, data: {value}} = options
+                return `${seriesName}\n${value}`
+              },
+              fontSize: 30
+            },
+            center: ['26%', '25%'],
+            radius: '40%',
+            waveAnimation: true
+          },
+          {
+            label: {
+              formatter (options) {return `${options.seriesName}\n${options.data.value}`},
+              fontSize: 30
+            },
+            center: ['25%', '70%'],
+            radius: '40%'
+          },
+          {
+            label: {
+              formatter (options) {return `${options.seriesName}\n${options.data.value}`},
+              fontSize: 30
+            },
+            center: ['75%', '25%'],
+            radius: '40%',
+            waveAnimation: false
+          },
+          {
+            label: {
+              formatter (options) {return `${options.seriesName}\n${options.data.value}`},
+              fontSize: 30
+            },
+            center: ['75%', '70%'],
+            radius: '40%',
+            // shape: 'rect',
+            waveAnimation: true
+          }
+        ]
+      },
+      liquidChartData: {
+        columns: ['city', 'percent'],
+        rows: [{city: '北京', percent: 0.6}, {city: '广州', percent: 0.4}, {city: '上海', percent: 0.9},{city: '深圳', percent: 0.5}]
+      }
 
     }),
     methods:{
@@ -135,21 +194,65 @@ import request from '@/utils/request'
 
 <style  lang="less" scoped>
 
-
-//修改轮播组件底部分隔符背景高度
- /deep/ .v-carousel__controls{
+// 手机
+@media (max-width: 600px){
+  //修改轮播组件底部分隔符背景高度
+  /deep/ .v-carousel__controls{
+    height: 20px;
+  }
+  //修改轮播组件底部分隔符选中时光圈大小
+  /deep/ .v-btn--icon.v-size--small{
+    width: 23px;
     height: 22px;
-}
- //修改轮播组件底部分隔符选中时光圈大小
- /deep/ .v-btn--icon.v-size--small{
-   width: 23px;
-   height: 22px;
- }
- //修改轮播组件底部分隔符大小
+  }
+  //修改轮播组件底部分隔符大小
   /deep/.v-carousel__controls{
     i{
       font-size:10px !important;
     }
- }
+  }
+}
+
+// 平板
+@media (min-width: 600px){
+  .vDivider{
+    font-size: 20px;
+  }
+  //修改轮播组件底部分隔符背景高度
+  /deep/ .v-carousel__controls{
+    height: 30px;
+  }
+  //修改轮播组件底部分隔符选中时光圈大小
+  /deep/ .v-btn--icon.v-size--small{
+    width: 33px;
+    height: 32px;
+  }
+  //修改轮播组件底部分隔符大小
+  /deep/.v-carousel__controls{
+    i{
+      font-size:20px !important;
+    }
+  }
+}
+
+// PC
+@media (min-width: 960px){
+  //修改轮播组件底部分隔符背景高度
+  /deep/ .v-carousel__controls{
+    height: 30px;
+  }
+  //修改轮播组件底部分隔符选中时光圈大小
+  /deep/ .v-btn--icon.v-size--small{
+    width: 33px;
+    height: 32px;
+  }
+  //修改轮播组件底部分隔符大小
+  /deep/.v-carousel__controls{
+    i{
+      font-size:20px !important;
+    }
+  }
+}
+
 
 </style>

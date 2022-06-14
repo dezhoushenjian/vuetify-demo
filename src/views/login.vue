@@ -2,7 +2,7 @@
   <v-app id="app">
     <v-form class="pa-6" ref="form" v-model="valid" lazy-validation app>
       <v-text-field v-model="loginForm.username" :rules="usernameRules" label="账号" required></v-text-field>
-      <v-text-field v-model="loginForm.password" :rules="passwordRules" label="密码" required :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'" :type="show2 ? 'text' : 'password'"  @click:append="show2 = !show2"></v-text-field>
+      <v-text-field v-model="loginForm.password" :rules="passwordRules" label="密码" required autocomplete="off" :append-icon="show2 ? 'mdi-eye' : 'mdi-eye-off'" :type="show2 ? 'text' : 'password'"  @click:append="show2 = !show2"></v-text-field>
       <v-checkbox v-model="loginForm.rememberMe"  label="记住密码" ></v-checkbox>
       <v-btn block  :disabled="!valid"  color="success"  @click="handleLogin">登录</v-btn>
       <div style="display: flex;justify-content: center;">
@@ -20,6 +20,7 @@
 <script>
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from '@/utils/jsencrypt'
+import { Toast } from 'vant';
 
 export default {
   name: "Login",
@@ -44,18 +45,18 @@ export default {
     }
   },
   created() {
-    const query=this.$route.query;
-    const code = query.redirect.replaceAll("/index?code=", "")
-    if(query.redirect.indexOf("/index?code=") >= 0 && code) {
-      this.$store.dispatch("WeChatLogin", code).then(() => {
-        this.$router.push({ path: this.redirect || "/" }).catch(()=>{});
-        // this.$router.push({ path: "/userStoreList" }).catch(()=>{});
-      }).catch((res) => {
-          console.log('catch',res)
-      });
-    } else {
-      this.getCookie()
-    }
+    // const query=this.$route.query;
+    // const code = query.redirect.replaceAll("/index?code=", "")
+    // if(query.redirect.indexOf("/index?code=") >= 0 && code) {
+    //   this.$store.dispatch("WeChatLogin", code).then(() => {
+    //     this.$router.push({ path: this.redirect || "/" }).catch(()=>{});
+    //     // this.$router.push({ path: "/userStoreList" }).catch(()=>{});
+    //   }).catch((res) => {
+    //       console.log('catch',res)
+    //   });
+    // } else {
+    //   this.getCookie()
+    // }
   },
   methods: {
     getCookie() {
@@ -87,14 +88,22 @@ export default {
     },
     weChatLogin(){
       console.log("企业微信授权登录")
-      // const query=this.$route.query;
-      // const code = query.redirect.replaceAll("/index?code=", "")
-      const code = "4nLtZ6Y7D9yAUyL6BPvvAysT77a02nTwyXt9CR1iqdg"
-      this.$store.dispatch("WeChatLogin", code).then(() => {
-        this.$router.push({ path: this.redirect || "/" }).catch(()=>{})
-      }).catch((res) => {
-        console.log('catch',res)
-      })
+      const query=this.$route.query;
+      if(query.code){
+        this.$store.dispatch("WeChatLogin", query.code).then(() => {
+          this.$router.push({ path: this.redirect || "/" }).catch(()=>{});
+        }).catch((res) => {
+          Toast(res)
+        })
+      }else {
+        this.getCookie()
+      }
+      // const code = "4nLtZ6Y7D9yAUyL6BPvvAysT77a02nTwyXt9CR1iqdg"
+      // this.$store.dispatch("WeChatLogin", code).then(() => {
+      //   this.$router.push({ path: this.redirect || "/" }).catch(()=>{})
+      // }).catch((res) => {
+      //   console.log('catch',res)
+      // })
     }
   }
 };
