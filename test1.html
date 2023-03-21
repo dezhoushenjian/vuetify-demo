@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Cache" content="no-cache">
+    <title>Title</title>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+
+</head>
+<body>
+    <ul id="list"></ul>
+    <button id="btn" style="width: 300px;height: 300px">点击</button>
+    <h1 id="content1"></h1>
+    <h1 id="content2"></h1>
+    <h1 id="content3"></h1>
+    <h1 id="content4"></h1>
+    <h1 id="content5"></h1>
+    <h1 id="content6"></h1>
+    <h1 id="content7"></h1>
+
+<!--    <div>-->
+<!--        <span>{{msg}}</span>-->
+<!--    </div>-->
+<script>
+
+    let deviceObj = null
+    let isContentBlue = null
+
+    function ab2hex(buffer) {
+        const hexArr = Array.prototype.map.call(
+            new Uint8Array(buffer),
+            function (bit) {
+                return ('00' + bit.toString(16)).slice(-2)
+            }
+        )
+        return hexArr.join('')
+    }
+    function tenHex(number){
+        let intger = parseInt(number.slice(0,2),16)
+        let decimal = parseInt(number.slice(2,4),16)
+        return intger+'.' +decimal
+    }
+
+
+
+
+    var base64map
+            = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/',
+
+        crypt = {
+            // Bit-wise rotation left
+            rotl: function(n, b) {
+                return (n << b) | (n >>> (32 - b));
+            },
+
+            // Bit-wise rotation right
+            rotr: function(n, b) {
+                return (n << (32 - b)) | (n >>> b);
+            },
+
+            // Swap big-endian to little-endian and vice versa
+            endian: function(n) {
+                // If number given, swap endian
+                if (n.constructor == Number) {
+                    return crypt.rotl(n, 8) & 0x00FF00FF | crypt.rotl(n, 24) & 0xFF00FF00;
+                }
+
+                // Else, assume array and swap all items
+                for (var i = 0; i < n.length; i++)
+                    n[i] = crypt.endian(n[i]);
+                return n;
+            },
+
+            // Generate an array of any length of random bytes
+            randomBytes: function(n) {
+                for (var bytes = []; n > 0; n--)
+                    bytes.push(Math.floor(Math.random() * 256));
+                return bytes;
+            },
+
+            // Convert a byte array to big-endian 32-bit words
+            bytesToWords: function(bytes) {
+                for (var words = [], i = 0, b = 0; i < bytes.length; i++, b += 8)
+                    words[b >>> 5] |= bytes[i] << (24 - b % 32);
+                return words;
+            },
+
+            // Convert big-endian 32-bit words to a byte array
+            wordsToBytes: function(words) {
+                for (var bytes = [], b = 0; b < words.length * 32; b += 8)
+                    bytes.push((words[b >>> 5] >>> (24 - b % 32)) & 0xFF);
+                return bytes;
+            },
+
+            // Convert a byte array to a hex string
+            bytesToHex: function(bytes) {
+                for (var hex = [], i = 0; i < bytes.length; i++) {
+                    hex.push((bytes[i] >>> 4).toString(16));
+                    hex.push((bytes[i] & 0xF).toString(16));
+                }
+                return hex.join('');
+            },
+
+            // Convert a hex string to a byte array
+            hexToBytes: function(hex) {
+                for (var bytes = [], c = 0; c < hex.length; c += 2)
+                    bytes.push(parseInt(hex.substr(c, 2), 16));
+                return bytes;
+            },
+
+            // Convert a byte array to a base-64 string
+            bytesToBase64: function(bytes) {
+                for (var base64 = [], i = 0; i < bytes.length; i += 3) {
+                    var triplet = (bytes[i] << 16) | (bytes[i + 1] << 8) | bytes[i + 2];
+                    for (var j = 0; j < 4; j++)
+                        if (i * 8 + j * 6 <= bytes.length * 8)
+                            base64.push(base64map.charAt((triplet >>> 6 * (3 - j)) & 0x3F));
+                        else
+                            base64.push('=');
+                }
+                return base64.join('');
+            },
+
+            // Convert a base-64 string to a byte array
+            base64ToBytes: function(base64) {
+                // Remove non-base-64 characters
+                base64 = base64.replace(/[^A-Z0-9+\/]/ig, '');
+
+                for (var bytes = [], i = 0, imod4 = 0; i < base64.length;
+                     imod4 = ++i % 4) {
+                    if (imod4 == 0) continue;
+                    bytes.push(((base64map.indexOf(base64.charAt(i - 1))
+                            & (Math.pow(2, -2 * imod4 + 8) - 1)) << (imod4 * 2))
+                        | (base64map.indexOf(base64.charAt(i)) >>> (6 - imod4 * 2)));
+                }
+                return bytes;
+            }
+        };
+
+
+    var charenc = {
+        // UTF-8 encoding
+        utf8: {
+            // Convert a string to a byte array
+            stringToBytes: function(str) {
+                return charenc.bin.stringToBytes(unescape(encodeURIComponent(str)));
+            },
+
+            // Convert a byte array to a string
+            bytesToString: function(bytes) {
+                return decodeURIComponent(escape(charenc.bin.bytesToString(bytes)));
+            }
+        },
+
+        // Binary encoding
+        bin: {
+            // Convert a string to a byte array
+            stringToBytes: function(str) {
+                for (var bytes = [], i = 0; i < str.length; i++)
+                    bytes.push(str.charCodeAt(i) & 0xFF);
+                return bytes;
+            },
+
+            // Convert a byte array to a string
+            bytesToString: function(bytes) {
+                for (var str = [], i = 0; i < bytes.length; i++)
+                    str.push(String.fromCharCode(bytes[i]));
+                return str.join('');
+            }
+        }
+    };
+
+
+
+    var utf8 = charenc.utf8
+    var bin = charenc.bin,
+
+        // The core
+        sha1 = function (message) {
+            // Convert to byte array
+            if (message.constructor == String)
+                message = utf8.stringToBytes(message);
+            else if (typeof Buffer !== 'undefined' && typeof Buffer.isBuffer == 'function' && Buffer.isBuffer(message))
+                message = Array.prototype.slice.call(message, 0);
+            else if (!Array.isArray(message))
+                message = message.toString();
+
+            // otherwise assume byte array
+
+            var m  = crypt.bytesToWords(message),
+                l  = message.length * 8,
+                w  = [],
+                H0 =  1732584193,
+                H1 = -271733879,
+                H2 = -1732584194,
+                H3 =  271733878,
+                H4 = -1009589776;
+
+            // Padding
+            m[l >> 5] |= 0x80 << (24 - l % 32);
+            m[((l + 64 >>> 9) << 4) + 15] = l;
+
+            for (var i = 0; i < m.length; i += 16) {
+                var a = H0,
+                    b = H1,
+                    c = H2,
+                    d = H3,
+                    e = H4;
+
+                for (var j = 0; j < 80; j++) {
+
+                    if (j < 16)
+                        w[j] = m[i + j];
+                    else {
+                        var n = w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16];
+                        w[j] = (n << 1) | (n >>> 31);
+                    }
+
+                    var t = ((H0 << 5) | (H0 >>> 27)) + H4 + (w[j] >>> 0) + (
+                        j < 20 ? (H1 & H2 | ~H1 & H3) + 1518500249 :
+                            j < 40 ? (H1 ^ H2 ^ H3) + 1859775393 :
+                                j < 60 ? (H1 & H2 | H1 & H3 | H2 & H3) - 1894007588 :
+                                    (H1 ^ H2 ^ H3) - 899497514);
+
+                    H4 = H3;
+                    H3 = H2;
+                    H2 = (H1 << 30) | (H1 >>> 2);
+                    H1 = H0;
+                    H0 = t;
+                }
+
+                H0 += a;
+                H1 += b;
+                H2 += c;
+                H3 += d;
+                H4 += e;
+            }
+
+            return [H0, H1, H2, H3, H4];
+        },
+
+        // Public API
+        api = function (message, options) {
+            var digestbytes = crypt.wordsToBytes(sha1(message));
+            return options && options.asBytes ? digestbytes :
+                options && options.asString ? bin.bytesToString(digestbytes) :
+                    crypt.bytesToHex(digestbytes);
+        };
+
+    api._blocksize = 16;
+    api._digestsize = 20;
+    // const arr = [
+    //     {name: '小明'},
+    //     {name: '小红'},
+    //     {name: '小李'},
+    // ]
+    // const ul = document.getElementById('list')
+    // for (let i = 0; i < arr.length; i++) {
+    //     let oLi = document.createElement('li')
+    //     oLi.innerText = arr[i].name
+    //     ul.appendChild(oLi)
+    // }
+    document.getElementById('btn').addEventListener('click',()=>{
+        const ticket = 'kgt8ON7yVITDhtdwci0qeTNX0CgnoDQTt_QCOdulXotRzJvdXwriS5tHW8c6LC9NIY5KSnExbCW6jQpnKiK3RQ'  // 很重要！！！！
+        let nonceStr = 'Y7a6KkqX021bsSwT' // 随机字符串
+        let timeStamp = new Date().getTime() // 时间戳
+        let newTimeStamp = String(timeStamp).substr(0,10) // 10位数的时间戳
+        console.log('timestamp',newTimeStamp)
+        // 当前网页的 URL（可以为本地局域网网址），不包含 # 及其后面部分
+        let url = String(location.href.split('#')[0])
+        console.log('url',url)
+        let verifyStr = `jsapi_ticket=${ticket}&noncestr=${nonceStr}&timestamp=${newTimeStamp}&url=${url}`
+        let signature = api(verifyStr)
+        console.log('签名1', signature)
+
+
+            wx.config({
+                beta: true,// 必须这么写，否则wx.invoke调用形式的jsapi会有问题
+                // 上线的时候记得将 debug 关掉哦！！！！！
+                debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+                appId: 'wxcd30e6003ac047be', // 必填，企业微信的corpID
+                timestamp: newTimeStamp, // 必填，生成签名的时间戳
+                nonceStr: 'Y7a6KkqX021bsSwT', // 必填，生成签名的随机串
+                signature: signature,// 必填，签名，见 附录-JS-SDK使用权限签名算法
+                jsApiList: [
+                    'openBluetoothAdapter',
+                    'onBluetoothAdapterStateChange',
+                    'startBluetoothDevicesDiscovery',
+                    'stopBluetoothDevicesDiscovery',
+                    'getBluetoothDevices',
+                    'onBLEConnectionStateChange',
+                    'createBLEConnection',
+                    'onBLECharacteristicValueChange',
+                    'notifyBLECharacteristicValueChange',
+                    'getBLEDeviceServices',
+                    'getBLEDeviceCharacteristics'
+
+                ] // 必填，需要使用的JS接口列表，凡是要调用的接口都需要传进来
+            });
+            wx.ready(function (){
+                console.log('鉴权成功了')
+                // 初始化蓝牙模块
+                wx.openBluetoothAdapter({
+
+                    success: function (res) {
+                        console.log('ok',res)
+                        // 监听蓝牙适配器状态
+                        wx.onBluetoothAdapterStateChange(function(res) {
+                            console.log(`蓝牙适配器状态发生变化了`, res)
+                        })
+                        setTimeout(()=>{
+                            wx.startBluetoothDevicesDiscovery({
+                                services: ['0000FFF0-0000-1000-8000-00805F9B34FB'],
+                                success: function (res) {
+                                    console.log('查找到相关设备',res)
+                                    setTimeout(()=>{
+                                        wx.stopBluetoothDevicesDiscovery({
+                                            success: function (res) {
+                                                console.log('已搜寻到设备则停止搜寻设备',res)
+                                            }
+                                        })
+                                    },2000)
+
+                                    setTimeout(()=>{
+                                        wx.getBluetoothDevices({
+                                            success: function (res) {
+
+                                                //监听低功耗蓝牙连接状态的改变事件，包括开发者主动连接或断开连接，设备丢失，连接异常断开等等
+                                                wx.onBLEConnectionStateChange(function(res) {
+                                                    // 该方法回调中可以用于处理连接意外断开等异常情况
+                                                    isContentBlue = res.connected
+                                                    console.log(`device ${res.deviceId} state has changed, connected: ${res.connected}`)
+                                                })
+                                                setTimeout(()=>{
+                                                    // 如果发现设备则进行过滤
+                                                    if (res.devices[0]) {
+                                                        deviceObj = res.devices[0]
+                                                        // 如果不是连接状态则进行连接
+                                                        if (!isContentBlue){
+                                                            isContentBlue = true
+                                                            //连接低功耗蓝牙设备
+                                                            wx.createBLEConnection({
+                                                                // 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接
+                                                                deviceId: deviceObj.deviceId,
+                                                                success: function (res) {
+                                                                    alert("连接设备成功")
+                                                                    document.getElementById('content1').innerText = '连接设备成功'+ deviceObj.deviceId+ JSON.stringify(res)
+                                                                    console.log('连接设备成功',res)
+                                                                    setTimeout(()=>{
+                                                                        // 获取蓝牙设备所有 service（服务）
+                                                                        wx.getBLEDeviceServices({
+                                                                            // 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接
+                                                                            deviceId: deviceObj.deviceId,
+                                                                            success: function (res) {
+                                                                                alert("获取服务成功")
+                                                                                document.getElementById('content2').innerText = '获取服务成功'+res.services
+                                                                                console.log('device services:', res.services)
+                                                                                //获取蓝牙设备某个服务中的所有 characteristic
+                                                                                wx.getBLEDeviceCharacteristics({
+                                                                                    // 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接
+                                                                                    deviceId: deviceObj.deviceId,
+                                                                                    // 这里的 serviceId 需要在 getBLEDeviceServices 接口中获取
+                                                                                    serviceId:'0000FFF0-0000-1000-8000-00805F9B34FB',
+                                                                                    success (res) {
+                                                                                        alert("获取特征值成功")
+                                                                                        document.getElementById('content3').innerText = '获取特征值成功'+res.characteristics
+                                                                                        console.log('device getBLEDeviceCharacteristics:', res.characteristics)
+                                                                                        // 必须在这里的回调才能获取
+                                                                                        wx.onBLECharacteristicValueChange(function(characteristic) {
+                                                                                            console.log('获取数据:', characteristic)
+
+                                                                                            // 记录报文发送时间
+                                                                                            let timeCycle = new Date().getTime()
+
+                                                                                            let sitdata =  ab2hex(characteristic.value)
+                                                                                            alert(tenHex(sitdata.substring(sitdata.length-4)))
+                                                                                            console.log('sitdata',sitdata)
+                                                                                            let messageStorage = ''
+                                                                                            let flag = null
+                                                                                            let startVal = null
+                                                                                            let endVal = null
+                                                                                            // // 存储报文 然后判断新旧报文开头是否相同为0800 如果是则存储数据  如果不是再判读两次间隔
+                                                                                            // if(messageStorage.substr(0,4) == sitdata.substr(0,4)){
+                                                                                            //     flag = true
+                                                                                            //     // that.saveData()
+                                                                                            //     console.log("报文相同")
+                                                                                            // }else{
+                                                                                            //     flag = false
+                                                                                            //     // 如果当前报文不相等时间减去上次报文时间大于1000秒则触发了开灯按钮
+                                                                                            // }
+
+                                                                                            if(sitdata.substr(0,4)=='0800'){
+                                                                                                messageStorage = sitdata
+                                                                                            }
+                                                                                            if(sitdata.substr(0,4)=='0801'){
+                                                                                                startVal = tenHex(sitdata.substring(sitdata.length-4))
+                                                                                                endVal = tenHex(sitdata.substring(sitdata.length-4))
+                                                                                                messageStorage = sitdata
+                                                                                                document.getElementById('content').innerText = startVal
+                                                                                            }
+
+
+
+                                                                                            // document.getElementById('content').innerText = characteristic.value
+                                                                                        })
+                                                                                        wx.notifyBLECharacteristicValueChange({
+                                                                                            state: true, // 启用 notify 功能
+                                                                                            // 这里的 deviceId 需要已经通过 createBLEConnection 与对应设备建立链接
+                                                                                            deviceId: deviceObj.deviceId,
+                                                                                            // 这里的 serviceId 需要在上面的 getBLEDeviceServices 接口中获取
+                                                                                            serviceId: "0000FFF0-0000-1000-8000-00805F9B34FB",
+                                                                                            // 这里的 characteristicId 需要在上面的 getBLEDeviceCharacteristics 接口中获取
+                                                                                            characteristicId: "0000FFF2-0000-1000-8000-00805F9B34FB",
+                                                                                            success: function (res) {
+                                                                                                alert('获取值成功')
+                                                                                                alert(res)
+                                                                                            },
+                                                                                            fail:function (res) {
+                                                                                                alert('获取值失败')
+                                                                                                alert(res)
+                                                                                            }
+                                                                                        })
+
+                                                                                    },
+                                                                                    fail:function (res) {
+                                                                                        alert("获取特征值失败")
+                                                                                    }
+                                                                                })
+
+                                                                            },
+                                                                            fail:function (res) {
+                                                                                alert("获取服务失败"+ JSON.stringify(res) )
+                                                                            }
+                                                                        })
+
+                                                                    },2000)
+
+                                                                },
+                                                                fail:function (res) {
+                                                                    isContentBlue = false
+                                                                    console.log(res)
+                                                                    alert('连接设备失败了')
+                                                                }
+                                                            })
+                                                        }
+                                                        console.log('获取到设备参数',res)
+                                                    }else {
+                                                        alert('获取设备参数失败')
+                                                    }
+                                                },2000)
+
+                                            }
+                                        })
+                                    },2000)
+
+                                },
+                                fail:function (res){
+                                    console.log('查找失败',res)
+                                    alert('没有查找到相关设备')
+                                }
+                            })
+                        },2000)
+                        // 以微信硬件平台的蓝牙智能灯为例，主服务的 UUID 是 FEE7。传入这个参数，只搜索主服务 UUID 为 FEE7 的设备
+
+                    },
+
+                    fail:function (res) {
+                        console.log('fail',res)
+                        alert('请检查手机蓝牙是否开启？？？')
+                    },
+                })
+            })
+            wx.error(function(res){
+                console.log('config信息验证失败会执行error函数', res)
+                // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+            });
+    })
+
+
+
+    //
+    // aaa(){
+    //     const ticket = "bxLdikRXVbTPdHSM05e5u1eabyEH1AxjQyWnRV7IWEMqvKpuGzN8DKkEVL1pH8nO3-MIAOebdtBPKtqEGcIhfw"  // 很重要！！！！
+    //     let nonceStr = 'Y7a8KkqX041bsSwT' // 随机字符串
+    //     let timeStamp = new Date().getTime() // 时间戳
+    //     let newTimeStamp = String(timeStamp).substr(0,10) // 10位数的时间戳
+    //     // 当前网页的 URL（可以为本地局域网网址），不包含 # 及其后面部分
+    //     let url = 'https://dzmeixiangdianqi.com/about'
+    //     // let verifyStr = `jsapi_ticket=${ticket}&noncestr=${nonceStr}&timestamp=${newTimeStamp}&url=${url}`
+    //     // let signature = sha1(verifyStr)
+    //     // console.log('签名1', signature)
+    //     console.log('timeStamp',newTimeStamp)
+    //
+    //     wx.config({
+    //         beta: true,// 必须这么写，否则wx.invoke调用形式的jsapi会有问题
+    //         // 上线的时候记得将 debug 关掉哦！！！！！
+    //         debug: true, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+    //         appId: 'ww940512267feda1fd', // 必填，企业微信的corpID
+    //         timestamp: '1665481719', // 必填，生成签名的时间戳
+    //         nonceStr: 'Y7a8KkqX041bsSwT', // 必填，生成签名的随机串
+    //         signature: 'dce3700e39d263b80cdc1c9fc10f82078fca08e7',// 必填，签名，见 附录-JS-SDK使用权限签名算法
+    //         jsApiList: ['checkJsApi', 'chooseImage', 'openEnterpriseChat', 'previewFile'] // 必填，需要使用的JS接口列表，凡是要调用的接口都需要传进来
+    //     });
+    //     wx.error(function(res){
+    //         console.log('config信息验证失败会执行error函数', res)
+    //         // config信息验证失败会执行error函数，如签名过期导致验证失败，具体错误信息可以打开config的debug模式查看，也可以在返回的res参数中查看，对于SPA可以在这里更新签名。
+    //     });
+    //
+    // }
+   
+</script>
+</body>
+</html>
